@@ -78,8 +78,6 @@ def greedy_cow_transport(cows,limit=10):
     	for cow in cow_batch:
     		if cow in sorted_cows:
     			sorted_cows.remove(cow) # Remove the cows in the batch from the sorted list.
-
-    print(returned_cows)
     return(returned_cows)
 
 # Problem 3
@@ -112,15 +110,13 @@ def brute_force_cow_transport(cows,limit=10):
     	for cow_batch in partition:
     		# Ideally I would like to break from this loop and go to the
     		# next partition if the total_batch_weight > limit.
-    		# However, it simply broke from the for loop and ran then
-    		# insuing if statement.  I could keep track of a boolean which 
-    		# monitors over weight for the batch and if false sets the 
-    		# returned cows.  I think the overall O(n) would remain the same.
     		total_batch_weight = 0
     		for cow in cow_batch:
     			total_batch_weight += cows[cow]
     		if total_batch_weight > max_weight:
     			max_weight = total_batch_weight
+	    	if max_weight > limit:
+	    		break
 
     	if (len(partition) < num_trips) and (max_weight <= limit):
     		returned_cows = partition
