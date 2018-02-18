@@ -60,8 +60,25 @@ def greedy_cow_transport(cows,limit=10):
     transported on a particular trip and the overall list containing all the
     trips
     """
-    # TODO: Your code here
-    pass
+    returned_cows = [] # List of list of returned cows.
+    cows_copy = [] #We will copy the sorted cows into a list so they can be iterated over.
+
+    #Sorting the cows by their weight.
+    sorted_cows = sorted(cows, key=cows.get, reverse=True) 
+
+    # Go through the cows_copy building lists of cows to return.
+    while len(sorted_cows) > 0:
+    	cow_batch = [] # Cows to return this trip. 
+    	total_weight = 0 # Running weight of the cows.
+    	for i in range(len(sorted_cows)):
+    		if cows[sorted_cows[i]] <= limit - total_weight:
+    			cow_batch.append(sorted_cows[i])
+    			total_weight += cows[sorted_cows[i]]
+    	returned_cows.append(cow_batch)
+    	for cow in cow_batch:
+    		if cow in sorted_cows:
+    			sorted_cows.remove(cow) # Remove the cows in the batch from the sorted list.
+    return(returned_cows)
 
 # Problem 3
 def brute_force_cow_transport(cows,limit=10):
@@ -85,9 +102,27 @@ def brute_force_cow_transport(cows,limit=10):
     transported on a particular trip and the overall list containing all the
     trips
     """
-    # TODO: Your code here
-    pass
+
+    num_trips = len(cows) # Number of trips that will need to be taken
+    returned_cows = []
+    for partition in get_partitions(cows):
+    	max_weight = 0 # Find the max weight for the partition.
+    	for cow_batch in partition:
+    		# Ideally I would like to break from this loop and go to the
+    		# next partition if the total_batch_weight > limit.
+    		total_batch_weight = 0
+    		for cow in cow_batch:
+    			total_batch_weight += cows[cow]
+    		if total_batch_weight > max_weight:
+    			max_weight = total_batch_weight
+	    	if max_weight > limit:
+	    		break
+
+    	if (len(partition) < num_trips) and (max_weight <= limit):
+    		returned_cows = partition
+    		num_trips = len(partition)
         
+    return returned_cows
 # Problem 4
 def compare_cow_transport_algorithms():
     """
@@ -102,5 +137,20 @@ def compare_cow_transport_algorithms():
     Returns:
     Does not return anything.
     """
-    # TODO: Your code here
-    pass
+    # Load the cows, only do this once. 
+    cows = load_cows('ps1_cow_data.txt')
+
+    # run and print time to run our greedy cow transport function.
+    tn = time.time()
+    greedy_cows = greedy_cow_transport(cows, 10)
+    print("Greedy cow time: {0:.5f}".format(time.time() - tn))
+
+    # Run and print time to run our brute force cow transport function.
+    tn = time.time()
+    brute_cows = brute_force_cow_transport(cows, 10)
+    print("Brute force time: {0:.5f}".format(time.time() - tn))
+
+    print("Greedy cow trips: ", len(greedy_cows))
+    print("Brute force cow trips: ", len(brute_cows))
+
+compare_cow_transport_algorithms()
