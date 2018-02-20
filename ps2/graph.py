@@ -5,7 +5,6 @@
 # Time:
 
 import unittest
-
 #
 # A set of data structures to represent graphs
 #
@@ -60,10 +59,10 @@ class WeightedEdge(Edge):
         self.outdoor_distance = outdoor_distance
 
     def get_total_distance(self):
-        return self.total_distance
+        return int(self.total_distance)
 
     def get_outdoor_distance(self):
-        return self.outdoor_distance
+        return int(self.outdoor_distance)
 
     def __str__(self):
         return "{s}->{d} ({td}, {od})".format(s = str(self.get_source()), d = str(self.get_destination()), td = self.get_total_distance(), od = self.get_outdoor_distance())
