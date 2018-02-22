@@ -131,16 +131,17 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist,
         max_dist_outdoors constraints, then return None.
     """
     # Add the starting node to our path
-    temp_path = [[], 0, 0]
-    print(path[0])
-    temp_path[0] = path[0] + [start]
-    temp_path[1] = copy.deepcopy(path[1])
-    temp_path[2] = copy.deepcopy(path[2])
+    print("Path:", path)
+    td = int(path[1])
+    od = int(path[2])
+    path = path[0] + [start]
+    
+    
     #best_dist = path[1]
     #print("max_dist_outdoors", max_dist_outdoors)
     # If the start is the end point return the path
     if start == end:
-        return temp_path
+        return [path, td, od]
     
     if start == Node('32'):
         for edge in digraph.get_edges_for_node(start):
@@ -148,17 +149,17 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist,
     # For each of the nodes edges, explore that path.
     for edge in digraph.get_edges_for_node(start):
         print("EDGES:", edge)
-        print("temp path:", temp_path)
+        print("temp path:", path, 'OD:', od)
         print("DESTINATION:", edge.get_destination())
-        print(not (edge.get_destination() in temp_path[0]))
-        if not (edge.get_destination() in temp_path[0]): # Avoid cycles.
-            temp_path[1] = temp_path[1] + edge.get_total_distance()
-            temp_path[2] = temp_path[2] + edge.get_outdoor_distance()
+        print(not (edge.get_destination() in path))
+        if not (edge.get_destination() in path): # Avoid cycles.
+            td = td + edge.get_total_distance()
+            od = od + edge.get_outdoor_distance()
             if edge.get_destination() == Node('56'):
                 print("Destination", edge.get_destination())
-                print("{PATH IS:", temp_path)
-            if best_path == None or best_dist == None or (temp_path[2] <= max_dist_outdoors and temp_path[1] <= best_dist):
-                new_path = get_best_path(digraph, edge.get_destination(), end, temp_path, max_dist_outdoors, best_dist, best_path)
+                print("{PATH IS:", path)
+            if best_path == None or best_dist == None or (od <= max_dist_outdoors and td <= best_dist):
+                new_path = get_best_path(digraph, edge.get_destination(), end, [path, td, od], max_dist_outdoors, best_dist, best_path)
                 if new_path != None:
                     best_path = new_path
                     best_dist = new_path[1]
