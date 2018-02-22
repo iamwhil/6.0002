@@ -132,20 +132,19 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist,
     """
     # Add the starting node to our path
     print("Path:", path)
-    td = int(path[1])
-    od = int(path[2])
-    path = path[0] + [start]
+    temp_path = path[0] + [start]
+    td = path[1]
+    od = path[2]    
     
-    
-    #best_dist = path[1]
-    #print("max_dist_outdoors", max_dist_outdoors)
+    print("Working with temp path:", temp_path, "td:", td, "od:", od)
     # If the start is the end point return the path
     if start == end:
-        return [path, td, od]
+        return (temp_path, td, od)
     
     if start == Node('32'):
         for edge in digraph.get_edges_for_node(start):
-            print(str(edge))
+            print("our start 32 edge is", str(edge))
+            
     # For each of the nodes edges, explore that path.
     for edge in digraph.get_edges_for_node(start):
         print("EDGES:", edge)
@@ -159,7 +158,7 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist,
                 print("Destination", edge.get_destination())
                 print("{PATH IS:", path)
             if best_path == None or best_dist == None or (od <= max_dist_outdoors and td <= best_dist):
-                new_path = get_best_path(digraph, edge.get_destination(), end, [path, td, od], max_dist_outdoors, best_dist, best_path)
+                new_path = get_best_path(digraph, edge.get_destination(), end, (path, td, od), max_dist_outdoors, best_dist, best_path)
                 if new_path != None:
                     best_path = new_path
                     best_dist = new_path[1]
@@ -217,7 +216,7 @@ def directed_dfs(digraph, start, end, max_total_dist, max_dist_outdoors):
     start_node = Node(start)
     destination_node = Node(end)
     if (start_node in digraph.nodes and destination_node in digraph.nodes):
-        best_path = get_best_path(digraph, start_node, destination_node, [[], 0, 0], max_dist_outdoors, None, None)
+        best_path = get_best_path(digraph, start_node, destination_node, ([], 0, 0), max_dist_outdoors, None, None)
     if best_path == None or best_path[1] > max_total_dist or best_path[2] > max_dist_outdoors:
         raise ValueError
     else:
