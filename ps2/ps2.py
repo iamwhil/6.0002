@@ -1,11 +1,14 @@
 # 6.0002 Problem Set 5
 # Graph optimization
-# Name:
-# Collaborators:
-# Time:
+# Name: Whil
+# Collaborators: None
+# Time: Far too long!
 
 #
 # Finding shortest paths through MIT buildings
+# Learned quite a bit about passing multiple parameters around inside of a tuple
+# back to recursive calls.
+# The second to last test does not complete, as I do not pass back a best_outdoor_distance.
 #
 import unittest
 import copy
@@ -96,7 +99,7 @@ def load_map(map_filename):
 #
 
 # Problem 3b: Implement get_best_path
-def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist,
+def get_best_path(digraph, start, end, path, max_total_dist, max_dist_outdoors, best_dist,
                   best_path):
     """
     Finds the shortest path between buildings subject to constraints.
@@ -131,58 +134,27 @@ def get_best_path(digraph, start, end, path, max_dist_outdoors, best_dist,
         max_dist_outdoors constraints, then return None.
     """
     # Add the starting node to our path
-    print("Path:", path)
     temp_path = path[0] + [start]
-    td = path[1]
-    od = path[2]    
+    td = path[1]    
     
-    print("Working with temp path:", temp_path, "td:", td, "od:", od)
     # If the start is the end point return the path
     if start == end:
-        return (temp_path, td, od)
+        return (temp_path, td)
     
-    if start == Node('32'):
-        for edge in digraph.get_edges_for_node(start):
-            print("our start 32 edge is", str(edge))
-            
     # For each of the nodes edges, explore that path.
     for edge in digraph.get_edges_for_node(start):
-        print("EDGES:", edge)
-        print("temp path:", path, 'OD:', od)
-        print("DESTINATION:", edge.get_destination())
-        print(not (edge.get_destination() in path))
-        if not (edge.get_destination() in path): # Avoid cycles.
-            td = td + edge.get_total_distance()
-            od = od + edge.get_outdoor_distance()
-            if edge.get_destination() == Node('56'):
-                print("Destination", edge.get_destination())
-                print("{PATH IS:", path)
-            if best_path == None or best_dist == None or (od <= max_dist_outdoors and td <= best_dist):
-                new_path = get_best_path(digraph, edge.get_destination(), end, (path, td, od), max_dist_outdoors, best_dist, best_path)
+        if not (edge.get_destination() in temp_path): # Avoid cycles.
+            td = path[1] + edge.get_total_distance()
+            od = path[2] + edge.get_outdoor_distance()
+            if best_path == None or best_dist == None or (od <= max_dist_outdoors and td <= best_dist and td <= max_total_dist):
+                new_path = get_best_path(digraph, edge.get_destination(), end, (temp_path, td, od), max_total_dist, max_dist_outdoors, best_dist, best_path)
                 if new_path != None:
-                    best_path = new_path
+                    best_path = new_path[0]
                     best_dist = new_path[1]
-        else:
             if False:
                 print("Already vistited ", start)
     
-    return best_path
-#    path = [path[0] + [start], path[1], path[2]]
-#    print("CURRENT PATH", path)
-#    if start == end:
-#        return path
-#    for edge in digraph.get_edges_for_node(start):
-#        if edge.get_destination() not in path[0]: #avoid cycles
-#            if best_path == None or len(path[0]) < len(best_path):
-#                newPath = get_best_path(digraph, edge.get_destination(), end, path, max_dist_outdoors, best_dist,
-#                  best_path)
-#                if newPath != None:
-#                    best_path = newPath
-#        else:
-#            print('Already visited', edge.get_destination())
-#            
-#    return best_path 
-
+    return (best_path, best_dist)
 
 # Problem 3c: Implement directed_dfs
 def directed_dfs(digraph, start, end, max_total_dist, max_dist_outdoors):
@@ -216,8 +188,9 @@ def directed_dfs(digraph, start, end, max_total_dist, max_dist_outdoors):
     start_node = Node(start)
     destination_node = Node(end)
     if (start_node in digraph.nodes and destination_node in digraph.nodes):
-        best_path = get_best_path(digraph, start_node, destination_node, ([], 0, 0), max_dist_outdoors, None, None)
-    if best_path == None or best_path[1] > max_total_dist or best_path[2] > max_dist_outdoors:
+        best_path = get_best_path(digraph, start_node, destination_node, ([], 0, 0), max_total_dist, max_dist_outdoors, None, None)
+        print(best_path)
+    if best_path[0] == None or best_path[1] > max_total_dist:
         raise ValueError
     else:
         list_of_buildings = []
@@ -286,30 +259,30 @@ class Ps2Test(unittest.TestCase):
         #self._test_path(expectedPath=['1', '7'])
         self._test_path(expectedPath=['32', '56'])
 
-#    def test_path_no_outdoors(self):
-#        self._test_path(
-#            expectedPath=['32', '36', '26', '16', '56'], outdoor_dist=0)
+    def test_path_no_outdoors(self):
+        self._test_path(
+            expectedPath=['32', '36', '26', '16', '56'], outdoor_dist=0)
 
-#    def test_path_multi_step(self):
-#        self._test_path(expectedPath=['2', '3', '7', '9'])
-#
-#    def test_path_multi_step_no_outdoors(self):
-#        self._test_path(
-#            expectedPath=['2', '4', '10', '13', '9'], outdoor_dist=0)
-#
-#    def test_path_multi_step2(self):
-#        self._test_path(expectedPath=['1', '4', '12', '32'])
-#
-#    def test_path_multi_step_no_outdoors2(self):
-#        self._test_path(
-#            expectedPath=['1', '3', '10', '4', '12', '24', '34', '36', '32'],
-#            outdoor_dist=0)
-#
-#    def test_impossible_path1(self):
-#        self._test_impossible_path('8', '50', outdoor_dist=0)
-#
-#    def test_impossible_path2(self):
-#        self._test_impossible_path('10', '32', total_dist=100)
+    def test_path_multi_step(self):
+        self._test_path(expectedPath=['2', '3', '7', '9'])
+
+    def test_path_multi_step_no_outdoors(self):
+        self._test_path(
+            expectedPath=['2', '4', '10', '13', '9'], outdoor_dist=0)
+
+    def test_path_multi_step2(self):
+        self._test_path(expectedPath=['1', '4', '12', '32'])
+
+    def test_path_multi_step_no_outdoors2(self):
+        self._test_path(
+            expectedPath=['1', '3', '10', '4', '12', '24', '34', '36', '32'],
+            outdoor_dist=0)
+
+    def test_impossible_path1(self):
+        self._test_impossible_path('8', '50', outdoor_dist=0)
+
+    def test_impossible_path2(self):
+        self._test_impossible_path('10', '32', total_dist=100)
 
 
 if __name__ == "__main__":
