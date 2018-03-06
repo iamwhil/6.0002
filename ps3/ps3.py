@@ -33,6 +33,9 @@ class Position(object):
     def get_y(self):
         return self.y
     
+    def get_tile(self):
+        return "{x}, {y}".format(x = str(math.floor(self.get_x())), y = str(math.floor(self.get_y())))
+    
     def get_new_position(self, angle, speed):
         """
         Computes and returns the new Position after a single clock-tick has
@@ -81,7 +84,14 @@ class RectangularRoom(object):
         height: an integer > 0
         dirt_amount: an integer >= 0
         """
-        raise NotImplementedError
+        self.width = width
+        self.height = height
+        self.dirt_amount = dirt_amount
+        
+        self.locations = {}
+        for x in range(self.width):
+            for y in range(self.height):
+                self.locations["{x_location}, {y_location}".format(x_location = x, y_location = y)] = dirt_amount       
     
     def clean_tile_at_position(self, pos, capacity):
         """
@@ -96,7 +106,12 @@ class RectangularRoom(object):
         Note: The amount of dirt on each tile should be NON-NEGATIVE.
               If the capacity exceeds the amount of dirt on the tile, mark it as 0.
         """
-        raise NotImplementedError
+        print("POSITION", str(pos))
+        print("POSITION", str(pos), "Location!", pos.get_tile(), "selfy!", self.locations[pos.get_tile()])
+        if self.locations[pos.get_tile()] - capacity <= 0:
+            self.locations[pos.get_tile()] = 0
+        else:
+            self.locations[pos.get_tile()] = self.locations[pos.get_tile()] - capacity
 
     def is_tile_cleaned(self, m, n):
         """
@@ -112,13 +127,21 @@ class RectangularRoom(object):
         Note: The tile is considered clean only when the amount of dirt on this
               tile is 0.
         """
-        raise NotImplementedError
+        if self.locations["{m_loc}, {n_loc}".format(m_loc = m, n_loc = n)] <= 0 :
+            return True
+        else:
+            return False
 
     def get_num_cleaned_tiles(self):
         """
         Returns: an integer; the total number of clean tiles in the room
         """
-        raise NotImplementedError
+        cleaned_count = 0 
+        for dirt_amount in self.locations.values():
+            if dirt_amount == 0:
+                cleaned_count = cleaned_count + 1
+                
+        return cleaned_count
         
     def is_position_in_room(self, pos):
         """
@@ -127,7 +150,10 @@ class RectangularRoom(object):
         pos: a Position object.
         Returns: True if pos is in the room, False otherwise.
         """
-        raise NotImplementedError
+        if pos.get_tile() in self.locations.keys():
+            return True
+        else:
+            return False
         
     def get_dirt_amount(self, m, n):
         """
@@ -164,7 +190,13 @@ class RectangularRoom(object):
         Returns: a Position object; a random position inside the room
         """
         # do not change -- implement in subclasses
-        raise NotImplementedError        
+        raise NotImplementedError
+        
+    def tile_loc(pos):
+        x_loc = math.floor(pos.get_x())
+        y_loc = math.floor(pos.get_y())
+        return "{x}, {y}".format(x = x_loc, y = y_loc)
+    
 
 
 class Robot(object):
