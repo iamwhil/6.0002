@@ -5,10 +5,10 @@
 # Time:
 
 import math
-import random
-
-import ps3_visualize
-import pylab
+#import random
+#
+#import ps3_visualize
+#import pylab
 
 # For python 2.7:
 from ps3_verify_movement27 import test_robot_movement
@@ -32,9 +32,6 @@ class Position(object):
     
     def get_y(self):
         return self.y
-    
-    def get_tile(self):
-        return "{x}, {y}".format(x = str(math.floor(self.get_x())), y = str(math.floor(self.get_y())))
     
     def get_new_position(self, angle, speed):
         """
@@ -91,7 +88,7 @@ class RectangularRoom(object):
         self.locations = {}
         for x in range(self.width):
             for y in range(self.height):
-                self.locations["{x_location}, {y_location}".format(x_location = x, y_location = y)] = dirt_amount       
+                self.locations["{x_location}, {y_location}".format(x_location = x,y_location = y)]  = dirt_amount       
     
     def clean_tile_at_position(self, pos, capacity):
         """
@@ -107,11 +104,15 @@ class RectangularRoom(object):
               If the capacity exceeds the amount of dirt on the tile, mark it as 0.
         """
         print("POSITION", str(pos))
-        print("POSITION", str(pos), "Location!", pos.get_tile(), "selfy!", self.locations[pos.get_tile()])
-        if self.locations[pos.get_tile()] - capacity <= 0:
-            self.locations[pos.get_tile()] = 0
+        print("POSITION", str(pos), "Location!", self.get_tile(pos), "selfy!", self.locations[self.get_tile(pos)])
+        if self.locations[self.get_tile(pos)] - capacity <= 0:
+            self.locations[self.get_tile(pos)] = 0
         else:
-            self.locations[pos.get_tile()] = self.locations[pos.get_tile()] - capacity
+            self.locations[self.get_tile(pos)] = self.locations[self.get_tile(pos)] - capacity
+            
+    def get_tile(self, pos):
+      return "{x}, {y}".format(x = str(math.floor(pos.get_x())), y = str(math.floor(pos.get_y())))
+    
 
     def is_tile_cleaned(self, m, n):
         """
@@ -150,7 +151,7 @@ class RectangularRoom(object):
         pos: a Position object.
         Returns: True if pos is in the room, False otherwise.
         """
-        if pos.get_tile() in self.locations.keys():
+        if self.get_tile(pos) in self.locations.keys():
             return True
         else:
             return False
@@ -166,7 +167,7 @@ class RectangularRoom(object):
 
         Returns: an integer
         """
-        raise NotImplementedError
+        return self.locations["{m_loc}, {n_loc}".format(m_loc = m, n_loc = n)]
         
     def get_num_tiles(self):
         """
