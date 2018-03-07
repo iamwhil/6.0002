@@ -347,7 +347,10 @@ class FurnishedRoom(RectangularRoom):
         """
         Return True if tile (m, n) is furnished.
         """
-        raise NotImplementedError
+        if (m,n) in self.furniture_tiles:
+          return True
+        else:
+          return False
         
     def is_position_furnished(self, pos):
         """
@@ -355,7 +358,14 @@ class FurnishedRoom(RectangularRoom):
 
         Returns True if pos is furnished and False otherwise
         """
-        raise NotImplementedError
+        tile = self.get_tile(pos)
+        (m, n) = tile.split(',')
+        m = int(m)
+        n = int(n)
+        if (m, n) in self.furniture_tiles:
+          return True
+        else:
+          return False
         
     def is_position_valid(self, pos):
         """
@@ -363,19 +373,38 @@ class FurnishedRoom(RectangularRoom):
         
         returns: True if pos is in the room and is unfurnished, False otherwise.
         """
-        raise NotImplementedError
+        tile = self.get_tile(pos)
+        (m, n) = tile.split(',')
+        m = int(m)
+        n = int(n)
+        if self.get_tile(pos) in self.locations.keys() and not (m, n) in self.furniture_tiles:
+          return True
+        else:
+          return False
         
     def get_num_tiles(self):
         """
         Returns: an integer; the total number of tiles in the room that can be accessed.
         """
-        raise NotImplementedError
+        return len(self.locations) - len(self.furniture_tiles)
         
     def get_random_position(self):
         """
         Returns: a Position object; a valid random position (inside the room and not in a furnished area).
         """
-        raise NotImplementedError
+        valid = False
+        m = None
+        n = None
+        while valid == False:
+          tile = random.sample(self.locations.keys(), 1)
+          (m, n) = tile[0].split(',')
+          m = int(m)
+          n = int(n)
+          if (m, n) not in self.furniture_tiles:
+            valid = True
+            m = float(m) + random.random()
+            n = float(n) + random.random()
+        return Position(m, n)
 
 # === Problem 3
 class StandardRobot(Robot):
