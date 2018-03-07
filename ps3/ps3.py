@@ -272,11 +272,14 @@ class EmptyRoom(RectangularRoom):
     """
     An EmptyRoom represents a RectangularRoom with no furniture.
     """
+    def __init__(self, width, height, dirt_amount):
+      RectangularRoom.__init__(self, width, height, dirt_amount)
+      
     def get_num_tiles(self):
         """
         Returns: an integer; the total number of tiles in the room
         """
-        raise NotImplementedError
+        return len(self.locations)
         
     def is_position_valid(self, pos):
         """
@@ -284,13 +287,20 @@ class EmptyRoom(RectangularRoom):
         
         Returns: True if pos is in the room, False otherwise.
         """
-        raise NotImplementedError
+        if self.get_tile(pos) in self.locations.keys():
+          return True
+        else:
+          return False
         
     def get_random_position(self):
         """
         Returns: a Position object; a valid random position (inside the room).
         """
-        raise NotImplementedError
+        tile = random.sample(self.locations.keys(), 1)
+        (m, n) = tile[0].split(',')
+        m = float(m) + random.random()
+        n = float(n) + random.random()
+        return Position(m, n)
 
 class FurnishedRoom(RectangularRoom):
     """
