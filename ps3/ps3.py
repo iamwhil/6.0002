@@ -225,7 +225,7 @@ class Robot(object):
         self.speed = speed
         self.capacity = capacity
         self.position = room.get_random_position()
-        self.direction = float(random.randint(0, 360))
+        self.direction = float(random.randint(0, 359))
 
     def get_robot_position(self):
         """
@@ -254,6 +254,10 @@ class Robot(object):
 
         direction: float representing an angle in degrees
         """
+        full_circles = None
+        if direction >= 360.0:
+          full_circles = direction // 360
+          direction = direction - (360.0 * full_circles)
         self.direction = direction
 
     def update_position_and_clean(self):
