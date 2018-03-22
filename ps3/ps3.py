@@ -445,7 +445,7 @@ class StandardRobot(Robot):
           self.set_robot_direction(float(random.randint(0, 359)))
 
 # Uncomment this line to see your implementation of StandardRobot in action!
-test_robot_movement(StandardRobot, EmptyRoom)
+#test_robot_movement(StandardRobot, EmptyRoom)
 #test_robot_movement(StandardRobot, FurnishedRoom)
 
 # === Problem 4
@@ -486,7 +486,21 @@ class FaultyRobot(Robot):
         StandardRobot at this time-step (checking if it can move to a new position,
         move there if it can, pick a new direction and stay stationary if it can't)
         """
-        raise NotImplementedError
+        current_position = self.get_robot_position()
+        new_position = current_position.get_new_position(self.get_robot_direction(), self.speed)
+        # Find out if the room position is valid. If it is move there.
+        if self.room.is_position_valid(new_position):
+          self.set_robot_position(new_position)
+          (m, n) = RectangularRoom.tile_loc(self.get_robot_position())
+          if self.gets_faulty():
+            self.set_robot_direction(float(random.randint(0, 359)))
+          else:
+            if self.room.is_tile_cleaned(m,n):
+              print("Whirrrr, tile cleaned.")
+            else:
+              self.room.clean_tile_at_position(new_position, self.capacity)
+        else:
+          self.set_robot_direction(float(random.randint(0, 359)))
         
     
 #test_robot_movement(FaultyRobot, EmptyRoom)
