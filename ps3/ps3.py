@@ -104,8 +104,6 @@ class RectangularRoom(object):
         Note: The amount of dirt on each tile should be NON-NEGATIVE.
               If the capacity exceeds the amount of dirt on the tile, mark it as 0.
         """
-        print("POSITION", str(pos))
-        print("POSITION", str(pos), "Location!", self.get_tile(pos), "selfy!", self.locations[self.get_tile(pos)])
         if self.locations[self.get_tile(pos)] - capacity <= 0:
             self.locations[self.get_tile(pos)] = 0
         else:
@@ -430,15 +428,14 @@ class StandardRobot(Robot):
         by its given capacity. 
         """
         current_position = self.get_robot_position()
-        print("\n\nCurrent position:", current_position, "Class: ",type(current_position))
         new_position = current_position.get_new_position(self.get_robot_direction(), self.speed)
-        print("\n\nNew position:", new_position, "Class: ",type(new_position))
         # Find out if the room position is valid. If it is move there.
         if self.room.is_position_valid(new_position):
           self.set_robot_position(new_position)
           (m, n) = RectangularRoom.tile_loc(self.get_robot_position())
           if self.room.is_tile_cleaned(m,n):
-            print("Whirrrr, tile cleaned.")
+            # Do nothing
+            None
           else:
             self.room.clean_tile_at_position(new_position, self.capacity)
         else:
@@ -496,7 +493,8 @@ class FaultyRobot(Robot):
             self.set_robot_direction(float(random.randint(0, 359)))
           else:
             if self.room.is_tile_cleaned(m,n):
-              print("Whirrrr, tile cleaned.")
+              # Do nothing
+              None
             else:
               self.room.clean_tile_at_position(new_position, self.capacity)
         else:
@@ -527,14 +525,24 @@ def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_
     robot_type: class of robot to be instantiated (e.g. StandardRobot or
                 FaultyRobot)
     """
-    raise NotImplementedError
+    total_time = 0
+    for i in range(num_trials):
+      room = EmptyRoom(width, height, dirt_amount)
+      robots = []
+      for i in range(num_robots):
+        robots.append(robot_type(room, speed, capacity))
+      while room.get_num_cleaned_tiles()/room.get_num_tiles() < min_coverage:
+        for robot in robots:
+          robot.update_position_and_clean()
+        total_time += 1
+    return float(total_time)/num_trials
 
 
-# print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 5, 5, 3, 1.0, 50, StandardRobot)))
-# print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.8, 50, StandardRobot)))
-# print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.9, 50, StandardRobot)))
-# print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
-# print ('avg time steps: ' + str(run_simulation(3, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
+print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 5, 5, 3, 1.0, 50, StandardRobot)))
+print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.8, 50, StandardRobot)))
+print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.9, 50, StandardRobot)))
+print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
+print ('avg time steps: ' + str(run_simulation(3, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
 
 # === Problem 6
 #
