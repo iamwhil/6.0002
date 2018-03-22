@@ -88,8 +88,9 @@ class RectangularRoom(object):
         self.locations = {}
         for x in range(self.width):
             for y in range(self.height):
-                self.locations["{x_location}, {y_location}".format(x_location = x,y_location = y)]  = dirt_amount       
-    
+                #self.locations["{x_location}, {y_location}".format(x_location = x,y_location = y)]  = dirt_amount       
+                self.locations[(x, y)] = dirt_amount
+
     def clean_tile_at_position(self, pos, capacity):
         """
         Mark the tile under the position pos as cleaned by capacity amount of dirt.
@@ -111,7 +112,7 @@ class RectangularRoom(object):
             self.locations[self.get_tile(pos)] = self.locations[self.get_tile(pos)] - capacity
             
     def get_tile(self, pos):
-      return "{x}, {y}".format(x = str(math.floor(pos.get_x())), y = str(math.floor(pos.get_y())))
+      return (math.floor(pos.get_x()), math.floor(pos.get_y()))
     
 
     def is_tile_cleaned(self, m, n):
@@ -128,7 +129,7 @@ class RectangularRoom(object):
         Note: The tile is considered clean only when the amount of dirt on this
               tile is 0.
         """
-        if self.locations["{m_loc}, {n_loc}".format(m_loc = m, n_loc = n)] <= 0 :
+        if self.locations[(m,n)] <= 0 :
             return True
         else:
             return False
@@ -167,7 +168,7 @@ class RectangularRoom(object):
 
         Returns: an integer
         """
-        return self.locations["{m_loc}, {n_loc}".format(m_loc = m, n_loc = n)]
+        return self.locations[(m,n)]
         
     def get_num_tiles(self):
         """
@@ -196,7 +197,8 @@ class RectangularRoom(object):
     def tile_loc(pos):
         x_loc = math.floor(pos.get_x())
         y_loc = math.floor(pos.get_y())
-        return "{x}, {y}".format(x = x_loc, y = y_loc)
+        #return "{x}, {y}".format(x = x_loc, y = y_loc)
+        return (x_loc, y_loc)
     
 
 
@@ -301,7 +303,7 @@ class EmptyRoom(RectangularRoom):
         Returns: a Position object; a valid random position (inside the room).
         """
         tile = random.sample(self.locations.keys(), 1)
-        (m, n) = tile[0].split(',')
+        (m, n) = tile[0]
         m = float(m) + random.random()
         n = float(n) + random.random()
         return Position(m, n)
@@ -363,7 +365,7 @@ class FurnishedRoom(RectangularRoom):
         Returns True if pos is furnished and False otherwise
         """
         tile = self.get_tile(pos)
-        (m, n) = tile.split(',')
+        (m, n) = tile
         m = int(m)
         n = int(n)
         if (m, n) in self.furniture_tiles:
@@ -378,7 +380,7 @@ class FurnishedRoom(RectangularRoom):
         returns: True if pos is in the room and is unfurnished, False otherwise.
         """
         tile = self.get_tile(pos)
-        (m, n) = tile.split(',')
+        (m, n) = tile
         m = int(m)
         n = int(n)
         if self.get_tile(pos) in self.locations.keys() and not (m, n) in self.furniture_tiles:
@@ -401,7 +403,7 @@ class FurnishedRoom(RectangularRoom):
         n = None
         while valid == False:
           tile = random.sample(self.locations.keys(), 1)
-          (m, n) = tile[0].split(',')
+          (m, n) = tile[0]
           m = int(m)
           n = int(n)
           if (m, n) not in self.furniture_tiles:
@@ -428,15 +430,14 @@ class StandardRobot(Robot):
         by its given capacity. 
         """
         current_position = self.get_robot_position()
+        print("\n\nCurrent position:", current_position, "Class: ",type(current_position))
         new_position = current_position.get_new_position(self.get_robot_direction(), self.speed)
-        print(str(new_position))
+        print("\n\nNew position:", new_position, "Class: ",type(new_position))
         # Find out if the room position is valid. If it is move there.
         if self.room.is_position_valid(new_position):
           self.set_robot_position(new_position)
-          (m, n) = self.room.tile_loc(Position(new_position))
-          print(m)
-          print(n)
-          if self.room.is_tile_cleaned(self.room.tile_loc(new_position)):
+          (m, n) = RectangularRoom.tile_loc(self.get_robot_position())
+          if self.room.is_tile_cleaned(m,n):
             print("Whirrrr, tile cleaned.")
           else:
             self.room.clean_tile_at_position(new_position, self.capacity)
