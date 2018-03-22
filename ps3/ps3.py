@@ -7,8 +7,8 @@
 import math
 import random
 #
-#import ps3_visualize
-#import pylab
+import ps3_visualize
+import pylab
 
 # For python 2.7:
 from ps3_verify_movement27 import test_robot_movement
@@ -538,11 +538,11 @@ def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_
     return float(total_time)/num_trials
 
 
-print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 5, 5, 3, 1.0, 50, StandardRobot)))
-print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.8, 50, StandardRobot)))
-print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.9, 50, StandardRobot)))
-print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
-print ('avg time steps: ' + str(run_simulation(3, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
+#print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 5, 5, 3, 1.0, 50, StandardRobot)))
+#print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.8, 50, StandardRobot)))
+#print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.9, 50, StandardRobot)))
+#print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
+#print ('avg time steps: ' + str(run_simulation(3, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
 
 # === Problem 6
 #
@@ -550,11 +550,22 @@ print ('avg time steps: ' + str(run_simulation(3, 1.0, 1, 20, 20, 3, 0.5, 50, St
 #
 # 1)How does the performance of the two robot types compare when cleaning 80%
 #       of a 20x20 room?
+    
+#print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 20, 20, 3, 0.8, 500, StandardRobot)))
+#print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 20, 20, 3, 0.8, 500, FaultyRobot)))
+# Because the faulty robot "misfires" on 15% of the time, it takes the Faulty Robot longer to clean the room.
+# Over 500 runs the faulty robot on average takes ~18% longer.
+
 #
 #
 # 2) How does the performance of the two robot types compare when two of each
 #       robot cleans 80% of rooms with dimensions 
 #       10x30, 20x15, 25x12, and 50x6?
+    
+#  From the problem set (uncommenting out the bottom lines), it would seem that both the faulty and the normal robot
+#  decrease in the amount of time to clean the room as a function of 1/number-of-robots.  In all cases the faulty robot
+#  takes longer than the normal robot.  15 - 20% longer.  If you can buy 2 faulty robots for cheaper than one functional
+#  robot, due to faulty clearance, do that!  It will save you time and money!
 #
 #
 
@@ -600,5 +611,5 @@ def show_plot_room_shape(title, x_label, y_label):
     pylab.show()
 
 
-#show_plot_compare_strategies('Time to clean 80% of a 20x20 room, for various numbers of robots','Number of robots','Time / steps')
-#show_plot_room_shape('Time to clean 80% of a 300-tile room for various room shapes','Aspect Ratio', 'Time / steps')
+show_plot_compare_strategies('Time to clean 80% of a 20x20 room, for various numbers of robots','Number of robots','Time / steps')
+show_plot_room_shape('Time to clean 80% of a 300-tile room for various room shapes','Aspect Ratio', 'Time / steps')
