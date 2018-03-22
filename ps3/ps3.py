@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # Problem Set 3: Simulating robots
-# Name:
-# Collaborators (discussion):
-# Time:
+# Name: Whil
+# Collaborators (discussion): None... so alone.
+# Time: unknown
 
 import math
 import random
